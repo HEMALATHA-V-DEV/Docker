@@ -1,1 +1,842 @@
-# Docker
+
+
+- Why DOCKER?
+
+    - An application is working fine on developer console but not in testing or in production.
+
+    - In Dev there can be a software which is updated but in testing and production an older version is being used.
+
+    - Docker is a computer program/tool that makes it easier to deploy and run applications using a concept known as “containerization”.
+
+    - Imagine as a developer your application is packaged up with all of the parts it needs, such as libraries and other dependencies, and it is shipped out as one package
+
+    - Docker in other words is a light weight virtualization tool and containerizing platform where you can run and deploy applications and its dependencies which can be run in a Linux environment.
+
+    - Docker is an open-source project based on Linux containers. It uses Linux Kernel features like namespaces and control groups to create containers on top of an operating system.
+
+- Docker Engine
+
+    - Docker engine is the layer on which Docker runs. It’s a lightweight runtime and tooling that manages containers, images, builds, and more. It runs natively on Linux systems and is made up of:
+      - 1. A Docker Daemon that runs in the host computer.
+      - 2. A Docker Client that then communicates with the Docker Daemon to execute commands.
+      - 3. A REST API for interacting with the Docker Daemon remotely.
+
+- Docker Client
+
+    - The Docker Client is what you, as the end-user of Docker, communicate with. Think of it as the UI for Docker. 
+
+- Docker Daemon
+
+    - The Docker daemon is what actually executes commands sent to the Docker Client — like building, running, and distributing your containers. The Docker Daemon runs on the host machine, but as a user, you never communicate directly with the Daemon. The Docker Client can run on the host machine as well, but it’s not required to. It can run on a different machine and communicate with the Docker Daemon that’s running on the host machine.
+
+- Volumes
+
+    - Volumes are the “data” part of a container, initialized when a container is created. Volumes allow you to persist and share a container’s data. Data volumes are separate from the default Union File System and exist as normal directories and files on the host filesystem. So, even if you destroy, update, or rebuild your container, the data volumes will remain untouched. When you want to update a volume, you make changes to it directly. (As an added bonus, data volumes can be shared and reused among multiple containers, which is pretty neat.)
+
+
+
+- Microservice Architecture : 
+
+    - The idea behind microservice is some application is easier to build and maintain where broken down to smaller parts.
+    - Each component is developed separately and done....
+
+    - Example : Online Shopping Service : 
+		- Account Service
+		- Product Catalog
+		- Cart Server
+		- Order Server
+
+- Advantages of microservice architecture : 
+
+	- Building and maintenance is easy as broken down to smaller parts.
+	- If we need some new features or update in a module,
+		 it is easier because dependencies will be less compared to the application as a whole.
+	- If any component go down, application will be largely unaffected.
+
+- What is the problem to adopting microservices :
+
+    - Before DOCKER : For microservice architecture we have a host machine and there are several virtual machines 
+				each virtual machine is for a microservice. So problem is that lots of resource waste.
+				As we use more and more VMs for bigger application lots of disc space, RAM are unused.
+
+- How Docker solve this problem :
+
+	- We can run several microservices in one virtual machine by running various docker
+	- containers for each microservice.
+	- Docker do not need any RAM,DISK requirements initially.
+
+- How Docker solves the problem "not having consistent computing environment throughout the process of delivery (development, testing, production)" :
+
+	- Docker containers are developed by the developers.
+	- Docker provides a consistent computing environment throughout the whole SDLC (Software Development Life Cycle).
+
+- What is an Image?
+  - Docker image is the basis of containers. It’s a collection of layers stacked on top of each other. Each Docker image references a list of read-only layers that represent filesystem differences. Think of it like the jar file for java applications, you create one jar file but you can deploy it anywhere a java run time is enabled.
+  - A docker image is an archive containing all the files that go in a container.
+  - You can create many docker containers from the same docker image.
+  - The image can then be deployed to any Docker environment and executable as a container.
+  - A Docker image is containing everything needed to run an application as a container. This includes:
+
+    - code
+    - runtime
+    - libraries
+    - environment variables
+    - configuration files
+    
+    ![docker image](https://github.com/Tikam02/DevOps-Guide/blob/master/img/container-layers.jpg)
+
+		
+- What is a container?
+
+	- A container is a standard unit of software that packages up code and all its dependencies so the application runs quickly and reliably from one computing environment to another.
+
+	- A docker container image is s lightweight, standalone, executable package of software that includes everything needed to run an application: code, libraries, settings etc.
+
+	- Container images become containers at runtime and in the case of docker containers images become containers when they run on docker engine.
+
+	- Containers share the machine's OS system kernel and therefore do not require an OS per application.
+
+	- Applications are safer in containers and Docker provides the strongest default isolation capabilities in the industry.
+
+    - Docker container is the actual running piece created from a docker image. The only difference between a docker image and a docker container is a top writable layer. When you create a new container, you add a new, thin, writable layer on top of the underlying stack. This layer is often called the “container layer”. All changes made to the running container — such as writing new files, modifying existing files, and deleting files — are written to this thin writable container layer. But once you delete the container, this top layer will be deleted as well. So it’s not persistent. The best thing with docker is that you can create a docker image using the current docker container with a commit. Hence, enabling us to capture system information and make it immutable so its reproducible anywhere. This solves many of the server related problems we encounter these days.
+    
+    ![Docker container](https://github.com/Tikam02/DevOps-Guide/blob/master/img/docker-image.png)  
+    
+  
+
+- Containers Vs VM
+
+    - When talking about containerization it is very often compared to virtual machines. Let’s take a look at the following image to see the main difference :
+  
+    - The Docker container platform is always running on top of the host operating system. Containers are containing the binaries, libraries, and the application itself. Containers do not contain a guest operating system which ensures that containers are lightweight.
+  
+    -In contrast virtual machines are running on a hypervisor (responsible for running virtual machines) and include it’s own guest operating system. This increased the size of the virtual machines significantly, makes setting up virtual machines more complex and requires more resources to run each virtual machine.
+
+    ![container vs VM](https://github.com/Tikam02/DevOps-Guide/blob/master/img/dockervsvm.png)
+
+- Dockerfile
+
+    - Blueprint of a docker image (a text document) is known as Dockerfile. This file contains all the commands you would run in order to build the docker image you want. Docker can build images reading this file, which is one of the key advantages of docker.
+
+    ```bash
+    # Super simple example of a Dockerfile
+    FROM ubuntu:latest
+    MAINTAINER Tikam Alma 
+
+    RUN apt-get update
+    RUN apt-get install -y python python-pip wget
+    RUN pip install Flask
+
+    ADD hello.py /home/hello.py
+
+    WORKDIR /home
+    ```
+
+    - We first write a Dockerfile which is like the definition of the image. Using the Dockerfile we create a docker image. We then push this image to Docker Hub and provide a unique tag that can be used to identify our image. Using this tag and image name, we can pull the docker image and deploy on another computer as a docker container.
+
+
+*******************************
+
+## Working of Containers Deep-Dive
+
+* The term “container” is really just an abstract concept to describe how a few different features work together to visualize a “container”. Let’s run through them real quick:
+- 1) Namespaces
+
+    - Namespaces provide containers with their own view of the underlying Linux system, limiting what the container can see and access. When you run a container, Docker creates namespaces that the specific container will use.
+
+    - There are several different types of namespaces in a kernel that Docker makes use of, for example:
+
+        - a. NET: Provides a container with its own view of the network stack of the system (e.g. its own network devices, IP addresses, IP routing tables, /proc/net directory, port numbers, etc.).
+  
+        - b. PID: PID stands for Process ID. If you’ve ever ran ps aux in the command line to check what processes are running on your system, you’ll have seen a column named “PID”. The PID namespace gives containers their own scoped view of processes they can view and interact with, including an independent init (PID 1), which is the “ancestor of all processes”.
+  
+        - c. MNT: Gives a container its own view of the “mounts” on the system. So, processes in different mount namespaces have different views of the filesystem hierarchy.
+
+        - d. UTS: UTS stands for UNIX Timesharing System. It allows a process to identify system identifiers (i.e. hostname, domainname, etc.). UTS allows containers to have their own hostname and NIS domain name that is independent of other containers and the host system.
+
+        - e. IPC: IPC stands for InterProcess Communication. IPC namespace is responsible for isolating IPC resources between processes running inside each container.
+
+        - f. USER: This namespace is used to isolate users within each container. It functions by allowing containers to have a different view of the uid (user ID) and gid (group ID) ranges, as compared with the host system. As a result, a process’s uid and gid can be different inside and outside a user namespace, which also allows a process to have an unprivileged user outside a container without sacrificing root privilege inside a container.
+  
+- 2) Control groups
+       -  Control groups (also called cgroups) is a Linux kernel feature that isolates, prioritizes, and accounts for the resource usage (CPU, memory, disk I/O, network, etc.) of a set of processes. In this sense, a cgroup ensures that Docker containers only use the resources they need — and, if needed, set up limits to what resources a container *can* use. Cgroups also ensure that a single container doesn’t exhaust one of those resources and bring the entire system down.
+
+- 3) Isolated Union file system:
+      - Docker uses Union File Systems to build up an image. You can think of a Union File System as a stackable file system, meaning files and directories of separate file systems (known as branches) can be transparently overlaid to form a single file system.
+
+      - The contents of directories which have the same path within the overlaid branches are seen as a single merged directory, which avoids the need to create separate copies of each layer. Instead, they can all be given pointers to the same resource; when certain layers need to be modified, it’ll create a copy and modify a local copy, leaving the original unchanged. That’s how file systems can *appear* writable without actually allowing writes. (In other words, a “copy-on-write” system.)
+
+      - Layered systems offer two main benefits:
+          - 1. Duplication-free: layers help avoid duplicating a complete set of files every time you use an image to create and run a new container, making instantiation of docker containers very fast and cheap.
+          - 2. Layer segregation: Making a change is much faster — when you change an image, Docker only propagates the updates to the layer that was changed.
+    
+    
+## 1. Basic concepts of docker - Containers and Images 
+
+- Detailed Docker concepts and notes from here - [Docker Concepts](https://github.com/Tikam02/DevOps-Guide/blob/master/Container-orchestration/Docker/docker-concepts.md)
+
+- Introduction to Docker:
+
+	- Docker is a computer program that performs operating-system-level virtualization, also known as "containerization".
+	- Containers could be as low as 50MB.
+	- Docker is a tool which helps to containerization of an application.
+
+	- Basic Design:
+
+		Hardware --> Operating System --> Container Engine --> Bins/Libs --> App1
+														   --> Bins/Libs --> App2
+														   --> Bins/Libs --> App3
+
+
+
+## 2. Setting up Docker
+
+
+- Installation on ubuntu:
+
+```bash
+
+sudo apt-get update
+		
+sudo apt-get install docker.io 
+ 
+ ```
+
+---
+
+- As an alternative you can install the official Docker CE (Community-Edition) like the following
+
+ ```
+# Install Prerequisites
+sudo apt-get install ca-certificates curl gnupg lsb-release
+
+# Add dockers official gpg key
+sudo mkdir -p /etc/apt/keyrings
+
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+
+
+# Setup repository
+echo \
+  "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu \
+  $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+
+
+# Install Docker Engine
+sudo apt-get update
+
+sudo apt-get install docker-ce docker-ce-cli containerd.io docker-compose-plugin
+ ```
+
+ - Check for installed version
+
+ ``` $ docker version ```
+
+
+- Docker container lifecycle:
+  - Processes: pull and image from Docker hub into a system where docker engine is installed.
+			whatever we downloaded from Docker hub is an image of a container.
+			Run the image. (The moment we run the image it becomes container)
+			Can run,stop,delete 
+      
+
+  
+## 3. Node Web App
+
+
+  - Let's not waste our precious time building node.js web app just see the node app folder and run into your local system:
+
+  - we will be use this Node.js+Express.js web app for docker containerisation tutorial ->> [Node Js web App](https://github.com/Tikam02/DevOps-Guide/tree/master/Docker/node)
+
+  ``` cd node```
+
+  ``` npm install ```
+
+  ```node app.js```
+
+  - Go to http://localhost:8080
+
+  
+  
+## 4. Writing Dockerfile
+
+- Your Dockerfile specifies what will be included in your application container when it is executed. Using a Dockerfile allows you to define your container environment and avoid discrepancies with dependencies or runtime versions.
+
+- Following these guidelines on building optimized containers, we will make our image as efficient as possible by minimizing the number of image layers and restricting the image’s function to a single purpose — recreating our application files and static content.
+
+- In your project’s root directory, create the Dockerfile:
+
+``` nano dockerfile ```
+
+			or 
+``` touch dockerfile```
+
+- Docker images are created using a succession of layered images that build on one another. Our first step will be to add the base image for our application that will form the starting point of the application build.
+
+- Let’s use the node:10-alpine image, since at the time of writing this is the recommended LTS version of Node.js. The alpine image is derived from the Alpine Linux project, and will help us keep our image size down. For more information about whether or not the alpine image is the right choice for your project, please see the full discussion under the Image Variants section of the Docker Hub Node image page.
+
+- Add the following FROM instruction to set the application’s base image:
+
+``` FROM node:10-alpine```
+- This image includes Node.js and npm. Each Dockerfile must begin with a FROM instruction.
+
+- By default, the Docker Node image includes a non-root node user that you can use to avoid running your application container as root. It is a recommended security practice to avoid running containers as root and to restrict capabilities within the container to only those required to run its processes. We will therefore use the node user’s home directory as the working directory for our application and set them as our user inside the container. For more information about best practices when working with the Docker Node image, see this best practices guide.
+
+- To fine-tune the permissions on our application code in the container, let’s create the node_modules subdirectory in /home/node along with the app directory. Creating these directories will ensure that they have the permissions we want, which will be important when we create local node modules in the container with npm install. In addition to creating these directories, we will set ownership on them to our node user:-
+
+``` RUN mkdir -p /home/node/app/node_modules && chown -R node:node /home/node/app ```
+
+- For more information on the utility of consolidating RUN instructions, see this discussion of how to manage container layers.
+
+- Next, set the working directory of the application to /home/node/app:
+
+``` WORKDIR /home/node/app ```
+- If a WORKDIR isn’t set, Docker will create one by default, so it’s a good idea to set it explicitly.
+
+- Next, copy the package.json and package-lock.json (for npm 5+) files:
+
+ ``` COPY package*.json ./ ```
+
+- Adding this COPY instruction before running npm install or copying the application code allows us to take advantage of Docker’s caching mechanism. At each stage in the build, Docker will check to see if it has a layer cached for that particular instruction. If we change package.json, this layer will be rebuilt, but if we don’t, this instruction will allow Docker to use the existing image layer and skip reinstalling our node modules.
+
+- To ensure that all of the application files are owned by the non-root node user, including the contents of the node_modules directory, switch the user to node before running npm install:
+
+``` USER node ```
+
+- After copying the project dependencies and switching our user, we can run npm install:
+
+``` RUN npm install```
+- Next, copy your application code with the appropriate permissions to the application directory on the container:
+
+``` COPY --chown=node:node . . ```
+
+- This will ensure that the application files are owned by the non-root node user.
+
+- Finally, expose port 8080 on the container and start the application:
+
+	```bash
+		EXPOSE 8080
+		CMD [ "node", "app.js" ]
+	```
+
+- EXPOSE does not publish the port, but instead functions as a way of documenting which ports on the container will be published at runtime. CMD runs the command to start the application — in this case, node app.js. Note that there should only be one CMD instruction in each Dockerfile. If you include more than one, only the last will take effect.
+
+- There are many things you can do with the Dockerfile. For a complete list of instructions, please refer to Docker’s Dockerfile reference documentation.
+
+- The complete Dockerfile looks like this:
+
+	```bash
+		FROM node:10-alpine
+
+		RUN mkdir -p /home/node/app/node_modules && chown -R node:node /home/node/app
+
+		WORKDIR /home/node/app
+
+		COPY package*.json ./
+
+		USER node
+
+		RUN npm install
+
+		COPY --chown=node:node . .
+
+		EXPOSE 8080
+
+		CMD [ "node", "app.js" ]
+	```
+  
+
+
+## 5. Running Up the docker image
+
+  - You are now ready to build the application image using the docker build command. Using the -t flag with docker build will allow you to tag the image with a memorable name. Because we are going to push the image to Docker Hub, let’s include our Docker Hub username in the tag. We will tag the image as nodejs-image-demo, but feel free to replace this with a name of your own choosing. Remember to also replace your_dockerhub_username with your own Docker Hub username:
+
+  ``` $ docker build -t your_dockerhub_username/nodejs-image-demo . ```
+
+  - The . specifies that the build context is the current directory.
+
+- It will take a minute or two to build the image. Once it is complete, check your images:
+
+ ``` $ docker images ```
+
+ - It is now possible to create a container with this image using docker run. We will include three flags with this command:
+
+    -p: This publishes the port on the container and maps it to a port on our host. We will use port 80 on the host, but you should feel free to modify this as necessary if you have another process running on that port. For more information about how this works, see this discussion in the Docker docs on port binding.
+    -d: This runs the container in the background.
+    --name: This allows us to give the container a memorable name.
+
+- Run the following command to build the container:
+
+  ``` $ docker run --name nodejs-image-demo -p 80:8080 -d your_dockerhub_username/nodejs-image-demo  ```
+
+- Once your container is up and running, you can inspect a list of your running containers with docker ps:
+
+   ``` $ docker ps ```
+
+
+ 
+
+- With your container running, you can now visit your application by navigating your browser to http://your_server_ip. You will see your application landing page once again:
+
+
+
+  
+## 6 Pushing Image To Dockerhub
+
+- By pushing your application image to a registry like Docker Hub, you make it available for subsequent use as you build and scale your containers. We will demonstrate how this works by pushing the application image to a repository and then using the image to recreate our container.
+
+- The first step to pushing the image is to log in to the Docker Hub account you created in the prerequisites:
+
+ ``` $ docker login -u your_dockerhub_username  ```
+
+ - When prompted, enter your Docker Hub account password. Logging in this way will create a ~/.docker/config.json file in your user’s home directory with your Docker Hub credentials.
+
+ - You can now push the application image to Docker Hub using the tag you created earlier, your_dockerhub_username/nodejs-image-demo:
+
+ ``` $ docker push your_dockerhub_username/nodejs-image-demo```
+
+- Let’s test the utility of the image registry by destroying our current application container and image and rebuilding them with the image in our repository.
+
+- First, list your running containers:
+
+  ``` $ docker ps ```
+
+- Using the CONTAINER ID listed in your output, stop the running application container. Be sure to replace the highlighted ID below with your own CONTAINER ID for example:
+
+``` $ docker stop e50ad27074a7 ```
+
+- List your all of your images with the -a flag:
+
+``` $ docker images -a ```
+
+- You will see the following output with the name of your image, your_dockerhub_username/nodejs-image-demo, along with the node image and the other images from your build.
+
+- Remove the stopped container and all of the images, including unused or dangling images, with the following command:
+
+``` $ docker system prune -a ```
+
+- You have now removed both the container running your application image and the image itself. For more information on removing Docker containers, images, and volumes, please see How To Remove Docker Images, Containers, and Volumes.
+
+- With all of your images and containers deleted, you can now pull the application image from Docker Hub: 
+
+``` $ docker pull your_dockerhub_username/nodejs-image-demo```
+
+- List your images once again:
+
+``` $ docker images ```
+
+- Now run the pulled image from your dockerhub repo:
+
+``` $ docker run --name nodejs-image-demo -p 80:8080 -d your_dockerhub_username/nodejs-image-demo ```
+
+
+## 7 Use multi-stage builds
+ - With multi-stage builds, you use multiple ``` FROM ``` statements in your Dockerfile. Each ``` FROM ``` instruction can use a different base, and each of them begins a new stage of the build. You can selectively copy artifacts from one stage to another, leaving behind everything you don’t want in the final image, also you can name your stages, by adding an ```AS <NAME>``` to the ```FROM``` instruction To show how this works, let’s adapt the Dockerfile to use multi-stage builds.
+
+
+[Dockerfile](https://github.com/s403o/GoViolin/blob/master/Dockerfile):
+```
+### stage 1 (build) ###
+FROM golang:alpine3.15 as build
+
+# set working directory
+RUN mkdir -p /app
+WORKDIR /app
+
+# install app dependencies
+RUN go mod init github.com/Rosalita/GoViolin
+
+# add app
+COPY . /app
+
+# listener port at runtime
+EXPOSE 3000
+
+# build
+RUN go build -o go
+
+# test
+HEALTHCHECK --interval=1m --timeout=20s --start-period=30s --retries=3 \  
+    CMD go test || exit 1
+
+### stage 2 (run) ###
+FROM alpine as production
+
+WORKDIR /app
+COPY --from=build /app .
+
+# run
+ENTRYPOINT [ "./go" ]
+```
+  - The end result is the same tiny production image as before, with a significant reduction in complexity.
+How does it work? The second ```FROM``` instruction starts a new build stage with the ```alpine as production``` image as its base. The ```COPY --from=build /app .``` line copies just the built artifact from the previous stage into this new stage. The Go SDK and any intermediate artifacts are left behind, and not saved in the final image.
+ - You can check the final image from this link [s403o/goapp](https://hub.docker.com/r/s403o/goapp/tags) the final size is 50MB! :)
+   
+<h1 align="center">Docker Basic Commands</h1>
+
+## Build Images
+
+- Create image using current directory’s Dockerfile <br>
+    ``` docker build -t image-name . ```
+
+- List images<br>
+   ``` docker images ```
+
+<br>
+
+## Running Container
+
+- Create new container from specified image<br>
+   ``` docker run image-name ```
+
+- Assign a name to the container<br>
+   ``` docker run --name nick-name image-name ```
+
+- Run image with an entry point | override existing entrypoint<br>
+   ```docker run image-name cmd```<br>
+   ```docker run image-name --entrypoint cmd```
+
+- Run image in interactive mode<br>
+   ``` docker run -it image-name ```
+
+- Run image in detached mode<br>
+   ``` docker run -d image-name ```
+
+- Run image mapping container's port to the host<br>
+   ``` docker run -p host-port:container-port image-name ```
+
+<br>
+
+## Managing Containers
+
+- List running containers<br>
+   ``` docker ps ```
+
+- List all containers<br>
+   ```docker ps -a```
+
+- Stop one or more running containers<br>
+   ```docker stop containerId```
+
+- Start one or more stopped containers<br>
+   ```docker start containerId```
+
+- Fetch the logs of a container<br>
+   ```docker logs containerId```
+
+- Fetch and follow log output of a container<br>
+   ```docker logs -f containerId```
+
+- Run a command in a running container in interactive mode<br>
+   ```docker exec -it containerId cmd```
+
+- Copy files/folders from container to local filesystem<br>
+  ```  docker cp containerId:/workdir/file.ext .```
+
+- Copy files/folders from local filesystem to container<br>
+  ```  docker cp  file.ext containerId:/workdir/```
+
+- Remove container<br>
+   ```docker rm containerId```
+
+- Remove running container<br>
+   ```docker rm -f containerId```
+
+- Remove all running and stopped containers<br>
+   ```docker rm -f $(docker ps -a -q)```
+
+<br>
+
+
+## Persistant data using Volumes
+
+- Creates a new volume that containers store data<br>
+   ```docker volume create volume-name```
+
+- Display detailed information on one or more volumes<br>
+   ```docker volume inspect volume-name```
+
+- List volumes<br>
+   ```docker volume ls```
+
+- Create a volume and then configure the container to use it<br>
+  ``` docker run -v volume-name:/dir/dir container-name```
+
+- Create mapping between dir in host and container<br>
+  ``` docker run -v $(pwd):/workdir container-name```
+
+
+
+
+<br>
+
+## Managing Images
+
+#### Tagging Images
+
+- Create tag to the image while building<br>
+   ``` docker build -t image-name:tag . ```
+
+- Create tag to the image after building<br>
+   ``` docker image tag src-image:latest dst-image:tag ```
+
+#### Saving & Loading Images
+
+- Save one or more images to a tar archive<br>
+   ``` docker image save -o image-name.tar image-name:tag ```
+
+- Load an image from a tar archive<br>
+   ``` docker image load -i image-name.tar ```
+
+#### Remove Images
+
+- Remove one or more images<br>
+   ``` docker image rm image-name ```<br>
+   ``` docker rmi image-name ```
+
+- Remove all images<br>
+   ``` docker system prune -a ```
+
+- Remove all stopped containers<br>
+   ``` docker container prune ```
+
+- Remove all dangling images<br>
+   ``` docker image prune ```
+
+- Remove all unused containers, networks, dangling and unreferenced images<br>
+   ``` docker system prune ```
+
+
+
+
+### Docker Build & Run  ![Docker](https://img.shields.io/badge/Docker-Build-blue?style=for-the-badge)
+
+- Create image using this directory’s Dockerfile
+
+``` docker build -t image-name . ```
+
+- Run “image-name” mapping port 8080 to 80
+
+``` docker run -p 8080:80 image-name ```
+
+- Run “image-name” mapping port 8080 to 80, but in detached mode
+
+``` docker run -d -p 8080:80 image-name ```
+
+- See a list of all running containers
+
+``` docker ps ```
+
+- Gracefully stop the specified container
+
+``` docker stop <hash> ```
+
+- See a list of all containers, even the ones not running
+
+``` docker ps -a ```
+
+- Force shutdown of the specified container
+
+``` docker kill <hash> ```
+
+- Remove the specified container from this machine
+
+ ``` docker rm <hash> ```
+
+- Remove all containers from this machine
+
+``` docker rm $(docker ps -a -q) ```
+
+- Show all images on this machine
+
+``` docker images -a ```
+
+- LEGACY: Remove the specified image from this machine
+
+``` docker rmi <imagename> ```
+
+- LEGACY:Remove all images from this machine
+
+``` docker rmi $(docker images -q) ```
+
+- LEGACY: Remove all images with dependencies
+
+``` docker images -q | xargs docker rmi –f ```
+
+- Log in this CLI session using your Docker credentials
+
+``` docker login ```
+
+- Tag <image> for upload to registry
+
+``` docker tag <image> username/repository:tag ```
+
+- Upload tagged image to registry
+
+``` docker push username/repository:tag ```
+
+- Run image from a registry
+
+``` docker run username/repository:tag ```
+
+- List Docker volume
+
+``` docker volume ls ```
+
+- List Docker Network
+
+``` docker network ls ```
+
+- Access an already running container and perform operations inside it
+
+``` docker exec -it <containerId> bash ```
+
+*********************************************
+
+### Docker Compose  ![Docker](https://img.shields.io/badge/Docker-Compose-blue?style=for-the-badge)
+
+- Build Docker Images using Docker Compose file
+
+``` docker-compose build ```
+
+- Run Docker Containers
+
+``` docker-compose up ```
+
+- Run Docker Containers in background Mode
+
+``` docker-compose up -d ```
+
+- Build Images before starting Containers
+
+``` docker-compose up --build ```
+
+- Recreate Containers from existing images
+
+``` docker-compose up --force-recreate ```
+
+- Stop and Remove Containers, Volumes, Networks, and Images
+
+``` docker-compose down ```
+
+- List Containers
+
+``` docker-compose ps -a ```
+
+- Display Log output
+
+``` docker-compose logs ```
+
+
+******************************************************
+
+### Docker Swarm  ![Docker](https://img.shields.io/badge/Docker-Swarm-blue?style=for-the-badge)
+
+- Initialize
+
+``` docker swarm init ```
+
+- Join Docker Cluster
+
+```` docker swarm join --token SWMTKN-1-3pu6hszjas19xyp7ghgosyx9k8atbfcr8p2is99znpy26u2lkl-1awxwuwd3z9j1z3puu7rcgdbx <manager/worker>:2377 ```
+
+- List Docker Nodes in Swarm Cluster
+
+``` docker node ls ```
+
+- List all running applications on this Docker host
+
+``` docker stack ls ```
+
+- Run the specified Compose file
+
+``` docker stack deploy -c <composefile> <STACK_NAME> ```
+
+- List the services associated with an app
+
+``` docker stack services <appname> ```
+
+- List the running containers associated with an app
+
+``` docker stack ps <appname> ```
+
+- Tear down an application
+
+``` docker stack rm <STACK_NAME>alias dstr='docker stack rm' ```
+
+- Docker Swarm Service list
+
+``` docker service ls ```
+``` alias dsls='docker service ls' ```
+
+- List the tasks of one or more services
+
+``` docker service ps <service_name>  ```
+``` alias dsp='docker service ps' ```
+
+- Docker Swarm Service logs
+
+``` alias dsl='docker service logs' ```
+
+- Remove specific docker swarm service
+
+``` alias dsr='docker service rm' ```
+
+- Remove unused Containers, Images, Network, etc.
+
+``` alias sprune='docker system prune' ```
+
+- Remove unused Volumes
+
+``` alias vprune='docker volume prune' ```
+
+- Create Secret
+
+``` docker secret create <SECRET_NAME> <SECRET_PATH> ```
+
+- Create Config
+
+``` docker config create <CONFIG_NAME> <CONFIG_FILE_PATH> ```
+
+
+
+
+### To delete all containers including its volumes use,
+
+```docker rm -vf $(docker ps -a -q)```
+
+###  To delete all the images,
+
+```docker rmi -f $(docker images -a -q)```
+
+> Remember, you should remove all the containers before removing all the images from which those containers were created.
+
+### In case you are working on Windows (Powershell),
+
+```bash
+$images = docker images -a -q
+foreach ($image in $images) { docker image rm $image -f }
+```
+### To delete all images
+
+```docker rmi $(docker images -a)```
+
+### To delete containers which are in exited state
+
+```docker rm $(docker ps -a -f status=exited -q)```
+
+### To delete containers which are in created state
+
+```docker rm $(docker ps -a -f status=created -q)```
+
+> NOTE: Remove all the containers then remove the images 
+
+
+### Docker run bash shell of image
+```docker run -it --entrypoint bash <image-name>```
+
+### List all docker commands
+``` docker --help ```
+
+
+
