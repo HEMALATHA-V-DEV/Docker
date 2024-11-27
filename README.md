@@ -201,3 +201,106 @@ docker0: flags=4099<UP,BROADCAST,MULTICAST> mtu 1500
   - Docker Engine is widely used in development environments to build and manage containers locally.
   - Containerd is a lighter and more efficient container runtime, making it suitable for production environments.
   - Docker uses the docker0 bridge network to allow communication between containers and between containers and the host system.
+
+## Custom Network in Docker
+
+You can create a custom network in Docker to manage how containers communicate with each other.
+
+### Example: Create a Custom Network
+```
+docker network create my_custom_network
+```
+Once the network is created, you can connect containers to it by specifying the network when running containers.
+
+```
+docker run --network my_custom_network <image-name>
+```
+---
+
+## Docker Client and Daemon
+
+- **Docker Client**: The Docker client (`docker`) sends commands to the Docker daemon. When you run commands like `docker run`, the client sends HTTP API calls to the Docker daemon.
+- **Docker Daemon**: The Docker daemon (`dockerd`) is the background process that handles the creation, management, and execution of Docker containers.
+
+### How the `docker run` Command Works
+
+When you run the command:
+
+```
+docker run <image-name>
+```
+- An HTTP API call is sent to the Docker daemon.
+- If the image is not already on the system, the daemon downloads the image from the Docker registry.
+- Once the image is available, the daemon runs a container based on the image.
+
+---
+
+## Checking Running Processes
+
+You can check running processes using the following command:
+
+```
+ps -ef
+```
+This will list all processes running on the system. The output will include the process IDs (PID) and the command being executed.
+
+---
+
+## Background Processes
+
+To run a command in the background, use the `&` symbol at the end of the command. For example:
+```
+ping -n 100 www.google.com &
+```
+- `ping -n 100 www.google.com`: Pings `www.google.com` for 100 packets.
+- `&`: Runs the process in the background.
+
+The process runs as the current user, and the number `100` refers to the number of seconds the ping will run.
+
+---
+
+## Namespaces in Linux
+
+Namespaces are a feature of the Linux kernel that isolates processes from each other. Each process runs in its own namespace, preventing interference between processes.
+
+### Checking Process Namespaces
+
+You can list namespaces with:
+```
+lsns -t pid
+```
+This shows the namespaces associated with processes. For example:
+
+NS TYPE NPROCS PID USER COMMAND 4026531836 pid 105 1 root /sbin/init
+
+- `pid`: Refers to the process ID (PID) namespace.
+- `NPROCS`: Number of processes in this namespace.
+- `PID`: Process ID of the command.
+- `USER`: The user who is running the command.
+- `COMMAND`: The command being executed.
+
+You can monitor namespaces in real-time using the following command:
+```
+watch lsns -t pid
+```
+---
+
+## Process Isolation with Namespaces
+
+Each process runs in its own isolated namespace. For example:
+
+- **Java processes**: Each Java process has its own namespace.
+- **Containers**: Containers in Docker also have isolated namespaces to ensure they do not interfere with each other.
+
+This isolation helps in security and resource management.
+
+---
+
+## Exiting a Process
+
+To stop a running process in the terminal, you can press `Ctrl + C`, which sends a termination signal to the process.
+
+---
+
+This concludes the simplified and corrected Docker notes with explanations and examples.
+This format uses triple backticks (```) for proper code block formatting, which is supported by GitHub Markdown.
