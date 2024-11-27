@@ -186,18 +186,16 @@ docker0: flags=4099<UP,BROADCAST,MULTICAST> mtu 1500
 
 - Communication Flow
   - Containers communicate with each other and the host system through the docker0 bridge network. If a container needs to access the internet, the traffic flows as follows:
-
-- Container → docker0 → eth0 → Internet.
+  - Container → docker0 → eth0 → Internet.
   - docker0 acts as a bridge network between containers and the host system's network.
-Example: Communication Between Containers
+    
+# Example: Communication Between Containers
 
-Let's say you have three containers running on Docker:
-
-Container 1 (C1), Container 2 (C2), and Container 3 (C3).
-If C1 needs to access the internet, it will route traffic through the following path:
-
-
-C1 → docker0 → eth0 → Internet
+- Let's say you have three containers running on Docker:
+  - Container 1 (C1), Container 2 (C2), and Container 3 (C3).
+    
+- If C1 needs to access the internet, it will route traffic through the following path:
+  - C1 → docker0 → eth0 → Internet
 
 # Conclusion
   - Docker Engine is widely used in development environments to build and manage containers locally.
