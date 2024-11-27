@@ -111,16 +111,17 @@ The `ifconfig` command is used to configure network interfaces and display netwo
 - **Use Case**: 
   - You can use `ifconfig` to assign an IP address to a network interface and to configure or display the current network interface configuration.
 
-#### Example Command:
-```bash
-ifconfig
+#### Example Command: 
 
+```
+ifconfig
+```
 ---
 This command will show the network configuration for all network interfaces on your system.
 
 Example Output:
 
-```bash
+```
 eth0: flags=4163<UP,BROADCAST,RUNNING,MULTICAST> mtu 9001
         inet 172.31.92.186  netmask 255.255.240.0  broadcast 172.31.95.255
         inet6 fe80::10a4:42ff:fe07:e1d3  prefixlen 64  scopeid 0x20<link>
@@ -138,28 +139,35 @@ lo: flags=73<UP,LOOPBACK,RUNNING> mtu 65536
         RX errors 0  dropped 0  overruns 0  frame 0
         TX packets 168  bytes 19234 (19.2 KB)
         TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
+```
+
 Installing ifconfig and jq on Ubuntu
 To install ifconfig and jq on an Ubuntu EC2 instance, run the following commands:
 
-```bash
+```
 sudo apt update && sudo apt install net-tools
 sudo apt install jq
+```
+
 Installing Docker
 To install Docker on your system, run this command:
 
-```bash
+```
 curl https://get.docker.com/ | bash
+```
 This command will download and install Docker using an automatic script.
 
 Once Docker is installed, verify the installation by checking the Docker version:
 
-```bash
+```
 docker --version
+```
+
 Docker Networking: docker0 Bridge Network
 After installing Docker, run ifconfig again to see a new network interface called docker0. This is Docker's default bridge network for containers.
 
 Example Output for docker0:
-```bash
+```
 docker0: flags=4099<UP,BROADCAST,MULTICAST> mtu 1500
         inet 172.17.0.1  netmask 255.255.0.0  broadcast 172.17.255.255
         ether 02:42:e5:5c:18:cf  txqueuelen 0  (Ethernet)
@@ -167,8 +175,9 @@ docker0: flags=4099<UP,BROADCAST,MULTICAST> mtu 1500
         RX errors 0  dropped 0  overruns 0  frame 0
         TX packets 0  bytes 0 (0.0 B)
         TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
+```
 
-#Explanation:
+# Explanation:
   - docker0: This is a virtual Ethernet bridge created by Docker to allow containers to communicate with each other and with the host system.
   - eth0: Represents the primary network interface on the host system (usually the physical network interface).
   - docker0 and eth0: docker0 connects the Docker containers to the host network via eth0.
